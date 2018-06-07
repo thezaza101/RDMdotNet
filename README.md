@@ -1,9 +1,6 @@
 # RDMdotNet
 Provide a lightweight reference data management utility to test 
 
-# Data definitions catalogue
-Making it easy to discover what data is collected, held or used by government, no matter who defines it, how it is defined, or where it is defined.
-
 ## Technology
 This micro service uses ASP.NET Core
 
