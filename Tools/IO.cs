@@ -69,14 +69,9 @@ namespace RDMdotNet
             }
             else
             {
-                if(!File.Exists(filePath))
-                {
-                    File.Create(filePath);
-                }
                 using (sw = new StreamWriter(filePath,false,Encoding.UTF8))
                 {
                     sw.WriteLine(JsonConvert.SerializeObject(inMemoryDB[fileName]));
-                    sw.Close();
                 }
             }
         }
@@ -114,7 +109,6 @@ namespace RDMdotNet
                     using(sr = new StreamReader(filePath,Encoding.UTF8))
                     {
                         data = sr.ReadToEnd();
-                        sr.Close();
                     }
                 }
                 catch (FileNotFoundException)

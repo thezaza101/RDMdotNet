@@ -40,7 +40,7 @@ namespace RDMdotNet.Controllers
 
         // PUT api/values/5
         [HttpPut("{id}")]
-        public IActionResult Put(string id, [FromBody]string value)
+        public IActionResult Put(string id, [FromBody]dynamic value)
         {
             RDSystem curData = IO.Single<RDSystem>(id);
 
@@ -58,8 +58,9 @@ namespace RDMdotNet.Controllers
 
         // DELETE api/values/5
         [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        public IActionResult Delete(string id)
         {
+            IO.Remove(new Release(){ID = id});
             return StatusCode(201);
             
         }

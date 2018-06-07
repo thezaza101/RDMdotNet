@@ -15,10 +15,18 @@ namespace RDMdotNet.Controllers
         public IActionResult Get()
         {
             RDSystem sys = new RDSystem(){ID = Guid.NewGuid().ToString(), Name = DateTime.Now.ToString()};
+            Release r = new Release(){ID = Guid.NewGuid().ToString(), SystemID = sys.ID};
+
+
             IO.Add(sys);
+            IO.Add(r);
             IO.SaveChanges();
 
-            return StatusCode(201, IO.All<RDSystem>());
+            var x = new {
+                System = IO.All<RDSystem>(),
+                Release = IO.All<Release>()
+            };
+            return StatusCode(201, x);
         }
 
         // GET api/values/5

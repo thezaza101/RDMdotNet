@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using RDMdotNet.Models;
+using Newtonsoft.Json;
 
 namespace RDMdotNet.Controllers
 {
@@ -11,21 +13,21 @@ namespace RDMdotNet.Controllers
     {
         // GET api/values
         [HttpGet]
-        public IEnumerable<string> Get()
+        public IActionResult Get()
         {
-            return new string[] { "value1", "value2" };
+            return StatusCode(200, IO.All<Change>());
         }
 
         // GET api/values/5
         [HttpGet("{id}")]
-        public IActionResult Get(int id)
+        public IActionResult Get(string id)
         {
-            return StatusCode(201);
+            return StatusCode(200, IO.Single<Change>(id));   
         }
 
         // POST api/values
         [HttpPost]
-        public IActionResult Post([FromBody]string value)
+        public IActionResult Post([FromBody]dynamic value)
         {
             return StatusCode(201);
             
@@ -33,7 +35,7 @@ namespace RDMdotNet.Controllers
 
         // PUT api/values/5
         [HttpPut("{id}")]
-        public IActionResult Put(int id, [FromBody]string value)
+        public IActionResult Put(string id, [FromBody]dynamic value)
         {
             return StatusCode(201);
             
@@ -41,10 +43,10 @@ namespace RDMdotNet.Controllers
 
         // DELETE api/values/5
         [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        public IActionResult Delete(string id)
         {
-            return StatusCode(201);
-            
+            IO.Remove(new Change(){ID = id});
+            return StatusCode(201);            
         }
     }
 }
