@@ -6,7 +6,5 @@ namespace RDMdotNet.Models
     {
         [Key]
         string ID {get;set;}
-        
-        
     } 
 }

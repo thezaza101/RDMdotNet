@@ -11,26 +11,24 @@ namespace RDMdotNet
     {
         private static StreamReader sr;
         private static StreamWriter sw;
-        private static Dictionary<string, List<IDBElement>> inMemoryDB;
+        private static Dictionary<string, List<object>> inMemoryDB;
         const string dbPath = "database\\";
 
         static IO()
         {
-            inMemoryDB = new Dictionary<string, List<IDBElement>>();
+            inMemoryDB = new Dictionary<string, List<object>>();
             if(!Directory.Exists(dbPath))
             {
                 Directory.CreateDirectory(dbPath);
             }            
         }
-
-
-        internal static void Add(IDBElement o)
+        internal static void Add<T>(T o)
         {
             string fileName = o.GetType().ToString()+".json";
-            List<IDBElement> existingElements = ReadObjects(o.GetType());
-            if (existingElements.FindIndex(e => e.ID.Equals(o.ID))>=0)
+            List<T> existingElements = ReadObjects<T>();
+            if (existingElements.FindIndex(e => e.ToDynamic().ID.Equals(o.ToDynamic().ID))>=0)
             {
-                throw new Exception("Key \"" + o.ID + "\" already exists");
+                throw new Exception("Key \"" + o.ToDynamic().ID + "\" already exists");
             }
             else
             {
@@ -38,24 +36,24 @@ namespace RDMdotNet
             }
         }
 
-        internal static void Remove(IDBElement o)
+        internal static void Remove<T>(T o)
         {
             string fileName = o.GetType().ToString()+".json";
-            List<IDBElement> existingElements = ReadObjects(o.GetType());
-            if (existingElements.FindIndex(e => e.ID.Equals(o.ID))>=0)
+            List<T> existingElements = ReadObjects<T>();
+            if (existingElements.FindIndex(e => e.ToDynamic().ID.Equals(o.ToDynamic().ID))>=0)
             {
-                existingElements.RemoveAll(e => e.ID.Equals(o.ID));
+                existingElements.RemoveAll(e => e.ToDynamic().ID.Equals(o.ToDynamic().ID));
             }
             else
             {
-                throw new Exception("Key \"" + o.ID + "\" does not exist");                
+                throw new Exception("Key \"" + o.ToDynamic().ID + "\" does not exist");                
             }
         }
 
 
         public static void SaveChanges()
         {
-            foreach (KeyValuePair<string,List<IDBElement>> kvp in inMemoryDB)
+            foreach (KeyValuePair<string,List<object>> kvp in inMemoryDB)
             {
                 SaveChanges(Type.GetType(kvp.Key.Substring(0,kvp.Key.IndexOf(".json"))));
             }
@@ -85,27 +83,28 @@ namespace RDMdotNet
         
         public static T Single<T>(string Id)
         {
-            return (T)ReadObjects(typeof(T)).Find(e => e.ID.Equals(Id));
+            return ReadObjects<T>().Find(e => e.ToDynamic().ID.Equals(Id));
         }
+        
 
         /// <summary>
         /// Reads the JSON file related to the supplied type and initialises the memory storage for that type
         /// </summary>
         /// <param>Type of the data to be read and initialised</param>
         /// <returns>List of the data for the given type</returns>
-        public static List<IDBElement> All<T>()
+        public static List<T> All<T>()
         {
-            return ReadObjects(typeof(T));
+            return ReadObjects<T>();
         }
         
-        private static List<IDBElement> ReadObjects(Type t)
+        private static List<T> ReadObjects<T>()
         {            
-            string fileName = t.ToString()+".json";
+            string fileName = typeof(T).ToString()+".json";
             string filePath = dbPath + fileName;
 
             if (inMemoryDB.ContainsKey(fileName))
             {
-                return inMemoryDB[fileName];
+                return inMemoryDB[fileName].ConvertObjectToGenericType<T>();
             } 
             else 
             {
@@ -122,10 +121,26 @@ namespace RDMdotNet
                 {
                     data ="";
                 }
-                List<IDBElement> dataList = string.IsNullOrWhiteSpace(data) ? new List<IDBElement>() : JsonConvert.DeserializeObject<List<IDBElement>>(data);                
-                inMemoryDB.Add(fileName, dataList);
+                List<T> dataList = string.IsNullOrWhiteSpace(data) ? new List<T>() : JsonConvert.DeserializeObject<List<T>>(data);                
+                inMemoryDB.Add(fileName, dataList.ConvertGenericTypeToObjectList<T>());
                 return dataList;
             }
+        }
+        private static List<object> ConvertGenericTypeToObjectList<T>(this List<T> inList)
+        {
+            List<object> outputObject = new List<object>();
+            inList.ForEach(a => outputObject.Add((object)a));
+            return outputObject;
+        }
+        private static List<T> ConvertObjectToGenericType<T>(this List<object> inList)
+        {
+            List<T> outputObject = new List<T>();
+            inList.ForEach(a => outputObject.Add((T)a));
+            return outputObject;
+        }
+        public static dynamic ToDynamic<T>(this T input)
+        {
+            return (dynamic)input;
         }
     }
 }
