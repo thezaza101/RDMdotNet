@@ -14,18 +14,50 @@ namespace RDMdotNet.Controllers
         [HttpGet]
         public IActionResult Get()
         {
-            RDSystem sys = new RDSystem(){ID = Guid.NewGuid().ToString(), Name = DateTime.Now.ToString()};
-            Release r = new Release(){ID = Guid.NewGuid().ToString(), SystemID = sys.ID};
+            RDSystem sys = new RDSystem(){
+                ID = Guid.NewGuid().ToString(), 
+                Name = "DXA"+IO.InnerList<RDSystem>().Count().ToString(), 
+                Active = true
+            }; 
+            sys.Properties.Add("Bool", true);
+            sys.Properties.Add("Int", (int)-24);
+            sys.Properties.Add("UInt", (uint)12);
+            sys.Properties.Add("Float", 43.27F);
+            sys.Properties.Add("Char", 'x');
+            sys.Properties.Add("Decimal", 53005.25M);
+
+            Release r = new Release(){
+                ID = Guid.NewGuid().ToString(), 
+                SystemID = sys.ID, 
+                Active = true, 
+                Name = "DXA_"+IO.InnerList<Release>().Count().ToString(), 
+                DeploymentDate = new DateTime(2018,7,1)
+            };
+
+            ChangeSet cs = new ChangeSet(){
+                ID = Guid.NewGuid().ToString(), 
+                ReleaseID = r.ID, 
+                Active = true, 
+                Name = "DXA_Test_ChangeSet_"+IO.InnerList<ChangeSet>().Count().ToString()
+            };
 
 
             IO.Add(sys);
             IO.Add(r);
+            IO.Add(cs);
             IO.SaveChanges();
 
             var x = new {
                 System = IO.All<RDSystem>(),
-                Release = IO.All<Release>()
+                Release = IO.All<Release>(),
+                ChangeSet = IO.All<ChangeSet>()
             };
+
+            var xx = IO.IsTypeSaveable<RDSystem>();
+            var xx1 = IO.IsTypeSaveable<ChangeSet>();
+            
+
+
             return StatusCode(201, x);
         }
 

@@ -3,7 +3,6 @@ using System.IO;
 using System.Text;
 using System.Collections.Generic;
 using Newtonsoft.Json;
-using RDMdotNet.Models;
 
 namespace RDMdotNet
 {
@@ -12,11 +11,13 @@ namespace RDMdotNet
         private static StreamReader sr;
         private static StreamWriter sw;
         private static Dictionary<string, List<object>> inMemoryDB;
+        private static HashSet<Type> changedObjects;
         const string dbPath = "database\\";
 
         static IO()
         {
             inMemoryDB = new Dictionary<string, List<object>>();
+            changedObjects = new HashSet<Type>();
             if(!Directory.Exists(dbPath))
             {
                 Directory.CreateDirectory(dbPath);
@@ -33,6 +34,7 @@ namespace RDMdotNet
             else
             {
                 inMemoryDB[fileName].Add(o);
+                AddItemToSaveList(fileName);
             }
         }
 
@@ -43,6 +45,7 @@ namespace RDMdotNet
             if (existingElements.FindIndex(e => e.ToDynamic().ID.Equals(o.ToDynamic().ID))>=0)
             {
                 existingElements.RemoveAll(e => e.ToDynamic().ID.Equals(o.ToDynamic().ID));
+                AddItemToSaveList(fileName);
             }
             else
             {
@@ -50,14 +53,20 @@ namespace RDMdotNet
             }
         }
 
-
+        /// <summary>
+        /// Commit the changes made to the database
+        /// </summary>
         public static void SaveChanges()
         {
-            foreach (KeyValuePair<string,List<object>> kvp in inMemoryDB)
+            foreach (Type t in changedObjects)
             {
-                SaveChanges(Type.GetType(kvp.Key.Substring(0,kvp.Key.IndexOf(".json"))));
+                SaveChanges(t);
             }
         }
+
+        /// <summary>
+        /// Commit the changes made to the database for the given type
+        /// </summary>
         public static void SaveChanges(Type t)
         {
             string fileName = t.ToString()+".json";
@@ -76,6 +85,11 @@ namespace RDMdotNet
             }
         }
         
+        /// <summary>
+        /// Returns an object of the supplied type given the object contains a key
+        /// </summary>
+        /// <typeparam name="T">Type of object</typeparam> 
+        /// <returns>Object of the supplied type and key</returns>
         public static T Single<T>(string Id)
         {
             return ReadObjects<T>().Find(e => e.ToDynamic().ID.Equals(Id));
@@ -83,13 +97,24 @@ namespace RDMdotNet
         
 
         /// <summary>
-        /// Reads the JSON file related to the supplied type and initialises the memory storage for that type
+        /// Returns all the objects stored of the supplied type
         /// </summary>
-        /// <param>Type of the data to be read and initialised</param>
+        /// <typeparam name="T">Type of object</typeparam> 
         /// <returns>List of the data for the given type</returns>
         public static List<T> All<T>()
         {
             return ReadObjects<T>();
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public static IReadOnlyCollection<T> InnerList<T>()
+        {
+            return ReadObjects<T>().AsReadOnly();
         }
         
         private static List<T> ReadObjects<T>()
@@ -120,6 +145,25 @@ namespace RDMdotNet
                 return dataList;
             }
         }
+
+        public static bool IsTypeSaveable<T>()
+        {
+            bool output = false;
+            foreach (System.Reflection.PropertyInfo info in typeof(T).GetProperties())
+            {
+                if(Attribute.IsDefined(info,typeof(System.ComponentModel.DataAnnotations.KeyAttribute)))
+                {
+                    output = true;
+                    break;
+                }
+            }
+            return output;
+        }
+        private static void AddItemToSaveList(string fileName)
+        {
+            changedObjects.Add(Type.GetType(fileName.Substring(0,fileName.IndexOf(".json"))));
+        }
+        
         private static List<object> ConvertGenericTypeToObjectList<T>(this List<T> inList)
         {
             List<object> outputObject = new List<object>();
