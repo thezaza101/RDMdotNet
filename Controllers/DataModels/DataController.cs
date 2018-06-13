@@ -10,21 +10,28 @@ using LStoreJSON;
 namespace RDMdotNet.Controllers
 {
     [Route("api/[controller]")]
-    public class SystemController : Controller
+    public class DataController : Controller
     {
         JSONStore js = new JSONStore();
         // GET api/values
         [HttpGet]
         public IActionResult Get()
         {
-            return StatusCode(200, js.All<RDSystem>());
+            return StatusCode(200, js.All<Table>());
         }
+
 
         // GET api/values/5
         [HttpGet("{id}")]
         public IActionResult Get(string id)
         {
-            return StatusCode(200, js.Single<RDSystem>(id));
+            return StatusCode(200, js.Single<Table>(id));
+        }
+        // GET api/values/5
+        [HttpGet("{id}/{innerID}")]
+        public IActionResult Get(string id, string innerID)
+        {
+            return StatusCode(200, js.Single<Table>(id).TableElements["http://dxa.gov.au/definition/"+id+"/"+innerID]);
         }
 
         // POST api/values
@@ -32,7 +39,7 @@ namespace RDMdotNet.Controllers
         public IActionResult Post([FromBody]dynamic value)
         {
             string postedData = value.ToString();
-            RDSystem sysData = JsonConvert.DeserializeObject<RDSystem>(postedData);
+            Table sysData = JsonConvert.DeserializeObject<Table>(postedData);
             sysData.ID = Guid.NewGuid().ToString();
             js.Add(sysData);
             js.SaveChanges();
@@ -43,10 +50,10 @@ namespace RDMdotNet.Controllers
         [HttpPut("{id}")]
         public IActionResult Put(string id, [FromBody]dynamic value)
         {
-            RDSystem curData = js.Single<RDSystem>(id);
+            Table curData = js.Single<Table>(id);
 
             string postedData = value.ToString();
-            RDSystem newData = JsonConvert.DeserializeObject<RDSystem>(postedData);
+            Table newData = JsonConvert.DeserializeObject<Table>(postedData);
             newData.ID = curData.ID;
 
             js.Remove(curData);

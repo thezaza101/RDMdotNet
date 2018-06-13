@@ -5,24 +5,26 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using RDMdotNet.Models;
 using Newtonsoft.Json;
+using LStoreJSON;
 
 namespace RDMdotNet.Controllers
 {
     [Route("api/[controller]")]
     public class ChangeSetController : Controller
     {
+        JSONStore js = new JSONStore();
         // GET api/values
         [HttpGet]
         public IActionResult Get()
         {
-            return StatusCode(200, IO.All<ChangeSet>());
+            return StatusCode(200, js.All<ChangeSet>());
         }
 
         // GET api/values/5
         [HttpGet("{id}")]
         public IActionResult Get(string id)
         {
-            return StatusCode(200, IO.Single<ChangeSet>(id));   
+            return StatusCode(200, js.Single<ChangeSet>(id));   
         }
 
         // POST api/values
@@ -45,7 +47,7 @@ namespace RDMdotNet.Controllers
         [HttpDelete("{id}")]
         public IActionResult Delete(string id)
         {
-            IO.Remove(new ChangeSet(){ID = id});
+            js.Remove(new ChangeSet(){ID = id});
             return StatusCode(201);
             
         }
