@@ -67,7 +67,7 @@ namespace RDMdotNet.Controllers
         [HttpDelete("{id}")]
         public IActionResult Delete(string id)
         {
-            js.Remove(new RDSystem(){ID = id});
+            js.Remove(new Table(){ID = id});
             return StatusCode(200);
             
         }

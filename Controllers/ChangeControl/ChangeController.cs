@@ -31,8 +31,11 @@ namespace RDMdotNet.Controllers
         [HttpPost]
         public IActionResult Post([FromBody]dynamic value)
         {
-            return StatusCode(201);
-            
+            string data = value;
+            List<Change> changes = JsonConvert.DeserializeObject<List<Change>>(data);
+            changes.ForEach(c => c.ObjectReference = js.Single<Element>(c.ElementID));
+            js.SaveChanges();
+            return StatusCode(201);            
         }
 
         // PUT api/values/5
