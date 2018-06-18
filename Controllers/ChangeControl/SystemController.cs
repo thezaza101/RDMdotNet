@@ -49,8 +49,12 @@ namespace RDMdotNet.Controllers
             RDSystem newData = JsonConvert.DeserializeObject<RDSystem>(postedData);
             newData.ID = curData.ID;
 
+            js.Add(new Archive(curData, Reason.Update));            
             js.Remove(curData);
-            js.Add(newData);
+            if (newData.Active)
+            {
+                js.Add(newData);
+            }
             js.SaveChanges();           
             
             return StatusCode(202);            

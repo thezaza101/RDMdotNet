@@ -9,9 +9,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="LStoreJSON" Version="1.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.5" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+    <Reference Include="LStoreJSON.dll">
+      <HintPath>LStoreJSON.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion> 
+    </Reference>  
   </ItemGroup>
 
   <ItemGroup>

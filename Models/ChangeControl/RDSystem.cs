@@ -5,5 +5,6 @@ namespace RDMdotNet.Models
     {
         public bool Active {get;set;}
         public string Name {get; set;}
+        
     }
 }
