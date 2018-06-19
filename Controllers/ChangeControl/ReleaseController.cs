@@ -36,22 +36,25 @@ namespace RDMdotNet.Controllers
             sysData.ID = Guid.NewGuid().ToString();
             js.Add(sysData);
             js.SaveChanges();
-            return StatusCode(201, sysData);    
-            
+            return StatusCode(201, sysData);
         }
 
         // PUT api/values/5
         [HttpPut("{id}")]
         public IActionResult Put(string id, [FromBody]dynamic value)
         {
-            RDSystem curData = js.Single<RDSystem>(id);
+            Release curData = js.Single<Release>(id);
 
             string postedData = value.ToString();
-            RDSystem newData = JsonConvert.DeserializeObject<RDSystem>(postedData);
+            Release newData = JsonConvert.DeserializeObject<Release>(postedData);
             newData.ID = curData.ID;
 
+            js.Add(new Archive(curData, Reason.Update));            
             js.Remove(curData);
-            js.Add(newData);
+            if (newData.Active)
+            {
+                js.Add(newData);
+            }
             js.SaveChanges();           
             
             return StatusCode(202);  

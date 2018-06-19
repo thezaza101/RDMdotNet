@@ -31,16 +31,30 @@ namespace RDMdotNet.Controllers
         [HttpPost]
         public IActionResult Post([FromBody]dynamic value)
         {
-            return StatusCode(201);
-            
+            string postedData = value.ToString();
+            ChangeSet sysData = JsonConvert.DeserializeObject<ChangeSet>(postedData);
+            sysData.ID = Guid.NewGuid().ToString();
+            js.Add(sysData);
+            js.SaveChanges();
+            return StatusCode(201, sysData);
         }
 
         // PUT api/values/5
         [HttpPut("{id}")]
         public IActionResult Put(string id, [FromBody]dynamic value)
         {
-            return StatusCode(201);
-            
+            ChangeSet curData = js.Single<ChangeSet>(id);
+            string postedData = value.ToString();
+            ChangeSet newData = JsonConvert.DeserializeObject<ChangeSet>(postedData);
+            newData.ID = curData.ID;
+            js.Add(new Archive(curData, Reason.Update));            
+            js.Remove(curData);
+            if (newData.Active)
+            {
+                js.Add(newData);
+            }
+            js.SaveChanges();
+            return StatusCode(202);             
         }
 
         // DELETE api/values/5
