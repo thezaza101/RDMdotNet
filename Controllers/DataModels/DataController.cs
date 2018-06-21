@@ -15,9 +15,21 @@ namespace RDMdotNet.Controllers
         JSONStore js = new JSONStore();
         // GET api/values
         [HttpGet]
-        public IActionResult Get()
+        public IActionResult Get(bool list)
         {
-            return StatusCode(200, js.All<Table>());
+            List<Table> output;
+
+            if (list)
+            {
+                output = new List<Table>();
+                js.All<Table>().ForEach(t => output.Add(new Table(){ID = t.ID, SystemID = t.SystemID}));
+            }
+            else
+            {
+                output = js.All<Table>();
+            }
+
+            return StatusCode(200, output);
         }
 
 
@@ -68,8 +80,7 @@ namespace RDMdotNet.Controllers
         public IActionResult Delete(string id)
         {
             js.Remove(new Table(){ID = id});
-            return StatusCode(200);
-            
+            return StatusCode(200);            
         }
     }
 }
