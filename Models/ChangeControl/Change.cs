@@ -14,5 +14,6 @@ namespace RDMdotNet.Models
         public string NewValue {get;set;}
         [Newtonsoft.Json.JsonIgnore]    
         public object ObjectReference {get;set;}   
+        public object NewElementPayload {get; set;}
     }
 }

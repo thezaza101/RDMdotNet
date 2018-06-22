@@ -29,11 +29,15 @@ namespace RDMdotNet.Controllers
 
         // POST api/values
         [HttpPost]
-        public IActionResult Post([FromBody]dynamic value)
+        public IActionResult Post([FromBody]List<Change> value)
         {
-            string data = value;
-            List<Change> changes = JsonConvert.DeserializeObject<List<Change>>(data);
+            List<Change> changes = value;
+            changes.ForEach(c => c.ID = Guid.NewGuid().ToString());
             changes.ForEach(c => c.ObjectReference = js.Single<Element>(c.ElementID));
+            foreach (Change c in changes)
+            {
+                js.Add(c);
+            }
             js.SaveChanges();
             return StatusCode(201);            
         }

@@ -18,7 +18,7 @@ namespace RDMdotNet.Controllers
         [HttpGet]
         public IActionResult Get()
         {
-            RDSystem sys = new RDSystem(){
+            /*RDSystem sys = new RDSystem(){
                 ID = Guid.NewGuid().ToString(), 
                 Name = "DXA"+js.InnerList<RDSystem>().Count().ToString(), 
                 Active = true
@@ -60,9 +60,69 @@ namespace RDMdotNet.Controllers
             var xx = JSONStore.IsTypeSaveable<RDSystem>();
             var xx1 = JSONStore.IsTypeSaveable<ChangeSet>();
             
+            return StatusCode(201, x);*/
+
+            Change c = new Change(){
+                ID=Guid.NewGuid().ToString(),
+                ChangeSetID = "92aec884-cb79-471d-9450-34f668e84226",
+                TableID="edu",
+                ElementID="http://dxa.gov.au/definition/edu/edu316",
+                Active = true,
+                Action=ChangeAction.UpdateElement,
+                ElementName="definition",
+                NewValue="Identifies whether or not the student/applicant identifies as being of Aboriginal and/or Torres Strait Islander descent"
+            };
+            Change c1 = new Change(){
+                ID=Guid.NewGuid().ToString(),
+                ChangeSetID = "19f421bd-5cc2-45cc-9c33-99c958ef8a20",
+                TableID="edu",
+                ElementID="http://dxa.gov.au/definition/edu/edu333",
+                Active = true,
+                Action=ChangeAction.UpdateElement,
+                ElementName="guidance",
+                NewValue="AOU"
+            };
+            Change c4 = new Change(){
+                ID=Guid.NewGuid().ToString(),
+                ChangeSetID = "b2933c47-28f4-4bb1-b522-26077a276553",
+                TableID="edu",
+                ElementID="http://dxa.gov.au/definition/edu/edu514",
+                Active = true,
+                Action=ChangeAction.RemoveElement
+            };
+            Element n = new Element(){ID = Guid.NewGuid().ToString()};
+            n.Values.Add("name", "TestNewElement");
+            n.Values.Add("domain", "Education");
+            n.Values.Add("status", "Standard");
+            n.Values.Add("definition", "A new element for testing");
+            n.Values.Add("guidance", "Field Name: FTE-NEW-TEST");
+            n.Values.Add("identifier", "http://dxa.gov.au/definition/edu/edu999");
+            n.Values.Add("usage", "[  \"See source for more information\"]");
+            n.Values.Add("datatype", "[]]");
+            n.Values.Add("values", "[]");
+            n.Values.Add("sourceURL", "Who knows");
 
 
-            return StatusCode(201, x);
+            Change c5 = new Change(){
+                ID=Guid.NewGuid().ToString(),
+                ChangeSetID = "92aec884-cb79-471d-9450-34f668e84226",
+                TableID="edu",
+                ElementID="http://dxa.gov.au/definition/edu/edu999",
+                Active = true,
+                Action=ChangeAction.AddElement,
+                NewElementPayload = n
+            };
+
+            js.Add(c);
+            js.Add(c1);
+            js.Add(c4);
+            js.Add(c5);
+            js.SaveChanges();
+
+
+
+            return StatusCode(201);
+
         }
 
         // GET api/values/5

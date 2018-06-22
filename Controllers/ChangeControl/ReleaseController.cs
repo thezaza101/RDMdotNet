@@ -15,9 +15,35 @@ namespace RDMdotNet.Controllers
         JSONStore js = new JSONStore();
         // GET api/values
         [HttpGet]
-        public IActionResult Get()
+        public IActionResult Get(string tableID = "", bool list = false)
         {
-            return StatusCode(200, js.All<Release>());
+            List<Release> all = js.All<Release>();
+            List<Release> filterd;
+            List<Release> output;
+
+            if (!string.IsNullOrWhiteSpace(tableID))
+            {
+                Table t  = js.Single<Table>(tableID);
+                RDSystem s = js.Single<RDSystem>(t.SystemID);
+                filterd = js.All<Release>().Where(r => r.SystemID == s.ID).ToList();
+            }
+            else
+            {
+                filterd = all;
+            }
+
+            if(list)
+            {
+                output = new List<Release>();
+                filterd.ForEach(c => output.Add(new Release(){Name = c.Name, Active = c.Active, ID = c.ID, SystemID = c.SystemID}));
+            }
+            else
+            {
+                output = filterd;
+            }    
+
+
+            return StatusCode(200, output);
         }
 
         // GET api/values/5

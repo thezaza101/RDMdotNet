@@ -69,6 +69,10 @@ namespace RDMdotNet.Controllers
             else
             {
                 output = filterdList;
+                foreach (ChangeSet cs in output)
+                {
+                    cs.Changes = js.All<Change>().Where(c => c.ChangeSetID == cs.ID).ToList();
+                }
             }            
 
             return StatusCode(200, output);
