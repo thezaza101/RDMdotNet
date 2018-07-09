@@ -12,7 +12,7 @@ namespace RDMdotNet.Controllers
     [Route("api/[controller]")]
     public class DataController : Controller
     {
-        JSONStore js = new JSONStore();
+        JSONStore js = new JSONStore(Environment.GetEnvironmentVariable("LStoreData"));
         // GET api/values
         [HttpGet]
         public IActionResult Get(bool list)
