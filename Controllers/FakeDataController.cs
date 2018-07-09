@@ -60,7 +60,7 @@ namespace RDMdotNet.Controllers
             var xx = JSONStore.IsTypeSaveable<RDSystem>();
             var xx1 = JSONStore.IsTypeSaveable<ChangeSet>();
             
-            return StatusCode(201, x);*/
+            return StatusCode(201, x);
 
             Change c = new Change(){
                 ID=Guid.NewGuid().ToString(),
@@ -119,6 +119,7 @@ namespace RDMdotNet.Controllers
             js.Add(c5);
             js.SaveChanges();
 
+                */
 
 
             return StatusCode(201);

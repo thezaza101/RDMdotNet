@@ -82,7 +82,9 @@ namespace RDMdotNet.Controllers
         [HttpGet("{id}")]
         public IActionResult Get(string id)
         {
-            return StatusCode(200, js.Single<ChangeSet>(id));   
+            ChangeSet cs = js.Single<ChangeSet>(id);
+            cs.Changes = js.All<Change>().Where(c => c.ChangeSetID == cs.ID).ToList();
+            return StatusCode(200, cs);   
         }
 
         // POST api/values
@@ -121,9 +123,7 @@ namespace RDMdotNet.Controllers
         [HttpDelete("{id}")]
         public IActionResult Delete(string id)
         {
-            js.Remove(new ChangeSet(){ID = id});
-            return StatusCode(201);
-            
+            return StatusCode(405);            
         }
     }
 }

@@ -92,9 +92,7 @@ namespace RDMdotNet.Controllers
         [HttpDelete("{id}")]
         public IActionResult Delete(string id)
         {
-            js.Remove(new Release(){ID = id});
-            return StatusCode(201);
-            
+            return StatusCode(405);            
         }
     }
 }
