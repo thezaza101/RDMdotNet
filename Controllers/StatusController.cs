@@ -17,6 +17,7 @@ namespace RDMdotNet.Controllers
         {
             public string name {get;set;}
             public int size {get;set;}
+            public string level {get;set;}
             public List<node> children {get;set;}
         }
         JSONStore js = new JSONStore(Environment.GetEnvironmentVariable("LStoreData"));
@@ -32,20 +33,20 @@ namespace RDMdotNet.Controllers
             List<string> tableList = new List<string>();
             tableRef.ForEach(e => tableList.Add(e.ID));
 
-            node root = new node(){name="RDM", size=0,children=new List<node>()};
+            node root = new node(){name="RDM", size=0, level = "0", children=new List<node>()};
             node sysnode;
             node relnode;
             node csnode;
 
             foreach (RDSystem s in js.All<RDSystem>())
             {
-                sysnode = new node(){name=s.Name, size=150,children=new List<node>()};
+                sysnode = new node(){name=s.Name, size=150,level = "1", children=new List<node>()};
                 foreach (Release r in js.All<Release>().Where(r => r.SystemID.Equals(s.ID)))
                 {
-                    relnode = new node(){name=r.Name, size=100,children=new List<node>()};
+                    relnode = new node(){name=r.Name, size=100, level = "2", children=new List<node>()};
                     foreach (ChangeSet c in js.All<ChangeSet>().Where(cs => cs.ReleaseID.Equals(r.ID)))
                     {
-                        csnode = new node(){name=c.Name, size = c.Changes.Count};
+                        csnode = new node(){name=c.Name, size = c.Changes.Count, level = "3",};
                         relnode.children.Add(csnode);
                     }
                     relnode.size = relnode.children.Count;
