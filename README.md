@@ -1,5 +1,6 @@
 # RDMdotNet
 Provide a lightweight reference data management utility to test 
+[![Build Status](https://travis-ci.org/thezaza101/RDMdotNet.svg?branch=master)](https://travis-ci.org/thezaza101/RDMdotNet)
 
 ## Technology
 This micro service uses ASP.NET Core
