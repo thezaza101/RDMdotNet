@@ -7,7 +7,7 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/RDMdotNet.csproj"
+                "${workspaceFolder}/src/RDMdotNet.csproj"
             ],
             "problemMatcher": "$msCompile"
         }
