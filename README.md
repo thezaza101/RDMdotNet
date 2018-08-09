@@ -1,5 +1,5 @@
 # RDMdotNet
-Provide a lightweight reference data management utility to test 
+Provide a lightweight reference data management utility to allow rapid setup/testing
 
 [![Build Status](https://travis-ci.org/thezaza101/RDMdotNet.svg?branch=master)](https://travis-ci.org/thezaza101/RDMdotNet)
 
